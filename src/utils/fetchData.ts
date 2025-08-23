@@ -1,4 +1,16 @@
-import https from 'https';
+const constants =
+  require('../config/constants') as typeof import('../config/constants');
+const http = require('./http') as typeof import('./http');
+
+const {
+  NOMINATIM_BASE,
+  OPEN_METEO_BASE,
+  USER_AGENT,
+  REQUEST_TIMEOUT_MS,
+  WEATHER_CODE_MAP,
+} = constants;
+
+const { getJson } = http;
 
 interface WeatherData {
   city: string;
@@ -7,49 +19,54 @@ interface WeatherData {
   condition: string;
 }
 
-function fetch(
-  url: string,
-  headers: Record<string, string> = {}
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let data: string = '';
-    const request = https
-      .get(url, { headers }, (res) => {
-        res.on('data', (chunk: Buffer) => (data += chunk));
-        res.on('end', () => resolve(data));
-      })
-      .on('error', reject);
-  });
+function buildNominatimUrl(city: string) {
+  return `${NOMINATIM_BASE}?format=json&q=${encodeURIComponent(city)}`;
 }
 
+function buildOpenMeteoUrl(lat: string, lon: string) {
+  return `${OPEN_METEO_BASE}?latitude=${lat}&longitude=${lon}&current_weather=true`;
+}
+
+type NominatimResult = Array<{
+  lat: string;
+  lon: string;
+  display_name: string;
+}>;
+type OpenMeteoResponse = {
+  current_weather: {
+    temperature: number;
+    windspeed: number;
+    weathercode: number;
+  };
+};
+
 async function getCoordinates(city: string) {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-    city
-  )}`;
-  const json = JSON.parse(
-    await fetch(url, { 'User-Agent': 'weather-cli-demo' })
+  const url = buildNominatimUrl(city);
+  const list = await getJson<NominatimResult>(
+    url,
+    { 'User-Agent': USER_AGENT },
+    REQUEST_TIMEOUT_MS
   );
-  if (!json.length) throw new Error('Location not found');
-  return { lat: json[0].lat, lon: json[0].lon };
+  if (!list.length || !list[0]) throw new Error('Location not found');
+  return { lat: list[0].lat, lon: list[0].lon };
 }
 
 async function getWeather(lat: string, lon: string) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
-  const { current_weather: w } = JSON.parse(await fetch(url));
+  const url = buildOpenMeteoUrl(lat, lon);
+  const data = await getJson<OpenMeteoResponse>(url, {}, REQUEST_TIMEOUT_MS);
+  const w = data.current_weather;
+  const label = WEATHER_CODE_MAP[w.weathercode] ?? `Code ${w.weathercode}`;
   return {
     temperature: `${w.temperature}°C`,
     windSpeed: `${w.windspeed} km/h`,
-    condition: w.weathercode.toString(),
+    condition: label,
   };
 }
 
 async function fetchData(city: string): Promise<WeatherData> {
   const { lat, lon } = await getCoordinates(city);
   const weather = await getWeather(lat, lon);
-  return {
-    city,
-    ...weather,
-  };
+  return { city, ...weather };
 }
 
 export = fetchData;
