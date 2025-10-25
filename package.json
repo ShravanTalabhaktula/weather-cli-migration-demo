@@ -1,0 +1,32 @@
+{
+  "name": "weather-cli-migration-demo",
+  "version": "1.0.0",
+  "description": "A TypeScript-based command-line application that fetches live weather data by city name using Open APIs. This project demonstrates the migration of a Node.js CLI app from CommonJS to modern ECMAScript Modules (ESM) with TypeScript and Jest.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShravanTalabhaktula/weather-cli-migration-demo.git"
+  },
+  "keywords": [
+    "cli",
+    "weather",
+    "typescript",
+    "commonjs"
+  ],
+  "author": "Shravan Kumar Talabhaktula",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ShravanTalabhaktula/weather-cli-migration-demo/issues"
+  },
+  "homepage": "https://github.com/ShravanTalabhaktula/weather-cli-migration-demo#readme",
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "typescript": "^5.9.2",
+    "ts-node": "^10.9.1"
+  }
+}
