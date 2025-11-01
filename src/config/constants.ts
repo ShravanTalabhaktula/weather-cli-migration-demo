@@ -1,11 +1,11 @@
-const USER_AGENT =
+export const USER_AGENT =
   process.env.WEATHER_CLI_UA ?? 'weather-cli-migration-demo/1.0.0';
-const REQUEST_TIMEOUT_MS = 10_000;
+export const REQUEST_TIMEOUT_MS = 10_000;
 
-const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org/search';
-const OPEN_METEO_BASE = 'https://api.open-meteo.com/v1/forecast';
+export const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org/search';
+export const OPEN_METEO_BASE = 'https://api.open-meteo.com/v1/forecast';
 
-const WEATHER_CODE_MAP: Record<number, string> = {
+export const WEATHER_CODE_MAP: Record<number, string> = {
   0: 'Clear',
   1: 'Mainly clear',
   2: 'Partly cloudy',
@@ -16,12 +16,4 @@ const WEATHER_CODE_MAP: Record<number, string> = {
   61: 'Rain',
   71: 'Snow',
   80: 'Rain showers',
-};
-
-export = {
-  USER_AGENT,
-  REQUEST_TIMEOUT_MS,
-  NOMINATIM_BASE,
-  OPEN_METEO_BASE,
-  WEATHER_CODE_MAP,
 };

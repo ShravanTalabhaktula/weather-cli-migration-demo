@@ -1,5 +1,16 @@
 /node_modules
-/dist
-.env
-.DS_Store
 *.log
+.idea/
+
+# Builds & coverage
+dist/
+coverage/
+
+# Mac / env
+.DS_Store
+.env
+
+# TypeScript outputs in tests
+tests/**/*.d.ts
+tests/**/*.d.ts.map
+tests/**/*.js.map
